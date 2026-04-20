@@ -1,0 +1,1655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Frexin Jepasingh — IoT & Network Engineer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet"/>
+<style>
+/* ── RESET & BASE ── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --indigo:#3d2fa0;
+  --indigo-light:#5b46d9;
+  --pink:#f0186e;
+  --cyan:#00e5ff;
+  --amber:#ffb300;
+  --bg:#05040f;
+  --bg2:#0b0920;
+  --bg3:#100e24;
+  --surface:rgba(255,255,255,.04);
+  --surface2:rgba(255,255,255,.07);
+  --border:rgba(255,255,255,.08);
+  --text:#e8e4ff;
+  --muted:#8880b0;
+  --font-head:'Syne',sans-serif;
+  --font-body:'DM Sans',sans-serif;
+  --ease-out-quint:cubic-bezier(.22,1,.36,1);
+}
+html{scroll-behavior:smooth;font-size:16px}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--font-body);
+  overflow-x:hidden;
+  cursor:none;
+}
+body.loading{overflow:hidden}
+
+/* ── NOISE TEXTURE ── */
+body::before{
+  content:'';
+  position:fixed;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+  opacity:.03;
+  pointer-events:none;
+  z-index:9999;
+}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:linear-gradient(180deg,var(--indigo-light),var(--pink));border-radius:99px}
+
+/* ── CUSTOM CURSOR ── */
+#cursor-dot{
+  position:fixed;width:8px;height:8px;
+  background:var(--cyan);
+  border-radius:50%;
+  pointer-events:none;z-index:99999;
+  transform:translate(-50%,-50%);
+  box-shadow:0 0 10px var(--cyan),0 0 30px var(--cyan);
+  transition:transform .1s,background .2s;
+}
+#cursor-ring{
+  position:fixed;width:36px;height:36px;
+  border:2px solid rgba(0,229,255,.45);
+  border-radius:50%;
+  pointer-events:none;z-index:99998;
+  transform:translate(-50%,-50%);
+  transition:transform .18s var(--ease-out-quint),width .2s,height .2s,border-color .2s;
+}
+a:hover~#cursor-ring,button:hover~#cursor-ring{width:52px;height:52px;border-color:var(--pink)}
+
+/* ── LOADING SCREEN ── */
+#loader{
+  position:fixed;inset:0;
+  background:var(--bg);
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  z-index:99990;
+  transition:opacity .6s .2s ease,visibility .6s .2s ease;
+}
+#loader.hide{opacity:0;visibility:hidden;pointer-events:none}
+.loader-initials{
+  font-family:var(--font-head);
+  font-size:clamp(4rem,12vw,8rem);
+  font-weight:800;
+  background:linear-gradient(135deg,var(--indigo-light),var(--pink),var(--cyan),var(--amber));
+  background-size:300% 300%;
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  animation:gradShift 2s linear infinite;
+  letter-spacing:-.02em;
+}
+.loader-label{
+  font-family:var(--font-body);
+  color:var(--muted);font-size:.9rem;
+  letter-spacing:.3em;text-transform:uppercase;
+  margin-top:.5rem;
+}
+.loader-bar-wrap{
+  width:200px;height:3px;
+  background:var(--surface2);
+  border-radius:99px;
+  margin-top:2.5rem;overflow:hidden;
+}
+.loader-bar{
+  height:100%;width:0%;
+  background:linear-gradient(90deg,var(--indigo-light),var(--pink),var(--cyan));
+  border-radius:99px;
+  animation:loadBar 1.8s var(--ease-out-quint) forwards;
+}
+@keyframes loadBar{to{width:100%}}
+
+/* ── PARTICLE CANVAS ── */
+#bg-canvas{
+  position:fixed;inset:0;
+  width:100%;height:100%;
+  pointer-events:none;z-index:0;
+}
+
+/* ── NAV ── */
+nav{
+  position:fixed;top:0;left:0;right:0;
+  z-index:1000;
+  padding:1rem 2rem;
+  display:flex;align-items:center;justify-content:space-between;
+  background:rgba(5,4,15,.55);
+  backdrop-filter:blur(18px);
+  border-bottom:1px solid var(--border);
+  transform:translateY(-100%);
+  animation:slideDown .6s .5s var(--ease-out-quint) forwards;
+}
+@keyframes slideDown{to{transform:translateY(0)}}
+.nav-logo{
+  font-family:var(--font-head);
+  font-weight:800;font-size:1.2rem;
+  background:linear-gradient(90deg,var(--cyan),var(--pink));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  text-decoration:none;letter-spacing:-.02em;
+}
+.nav-links{display:flex;gap:2rem;list-style:none}
+.nav-links a{
+  color:var(--muted);
+  text-decoration:none;
+  font-size:.875rem;font-weight:500;
+  letter-spacing:.05em;text-transform:uppercase;
+  position:relative;padding-bottom:3px;
+  transition:color .2s;
+}
+.nav-links a::after{
+  content:'';position:absolute;bottom:0;left:0;width:0;height:2px;
+  background:linear-gradient(90deg,var(--cyan),var(--pink));
+  border-radius:99px;
+  transition:width .3s var(--ease-out-quint);
+}
+.nav-links a:hover{color:var(--text)}
+.nav-links a:hover::after{width:100%}
+.nav-toggle{display:none;flex-direction:column;gap:5px;cursor:none;background:none;border:none;padding:4px}
+.nav-toggle span{display:block;width:24px;height:2px;background:var(--text);border-radius:2px;transition:.3s}
+
+/* ── SECTION WRAPPER ── */
+section{
+  position:relative;z-index:1;
+  padding:7rem 0;
+  max-width:1200px;margin:0 auto;
+  padding-left:2rem;padding-right:2rem;
+}
+.section-label{
+  display:inline-flex;align-items:center;gap:.6rem;
+  font-size:.75rem;font-weight:600;
+  letter-spacing:.2em;text-transform:uppercase;
+  color:var(--cyan);
+  margin-bottom:1.5rem;
+}
+.section-label::before{content:'';display:block;width:24px;height:2px;background:var(--cyan);border-radius:99px}
+.section-title{
+  font-family:var(--font-head);
+  font-size:clamp(2rem,5vw,3.2rem);
+  font-weight:800;line-height:1.1;
+  letter-spacing:-.03em;
+  margin-bottom:3rem;
+}
+
+/* ── HERO ── */
+#hero{
+  min-height:100vh;
+  padding-top:0;padding-bottom:0;
+  max-width:none;
+  display:flex;align-items:center;
+}
+.hero-inner{
+  max-width:1200px;margin:0 auto;
+  padding:0 2rem;
+  width:100%;
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:4rem;align-items:center;
+  padding-top:6rem;
+}
+.avail-tag{
+  display:inline-flex;align-items:center;gap:.5rem;
+  background:rgba(0,229,255,.07);
+  border:1px solid rgba(0,229,255,.25);
+  color:var(--cyan);
+  font-size:.8rem;font-weight:600;
+  letter-spacing:.1em;text-transform:uppercase;
+  padding:.45rem 1rem;border-radius:99px;
+  margin-bottom:1.5rem;
+}
+.avail-dot{
+  width:8px;height:8px;
+  background:var(--cyan);border-radius:50%;
+  animation:pulse 1.5s ease infinite;
+  box-shadow:0 0 8px var(--cyan);
+}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.7)}}
+
+.hero-name{
+  font-family:var(--font-head);
+  font-size:clamp(2.8rem,7vw,5.5rem);
+  font-weight:800;line-height:1;
+  letter-spacing:-.04em;
+  background:linear-gradient(90deg,#fff 20%,var(--pink) 50%,var(--cyan) 80%);
+  background-size:200% 100%;
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  animation:shimmer 4s linear infinite;
+}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+.hero-role{
+  font-size:clamp(1rem,2vw,1.3rem);
+  color:var(--muted);font-weight:300;
+  margin-top:.75rem;margin-bottom:2rem;
+  letter-spacing:.02em;
+}
+.hero-role span{color:var(--amber);font-weight:500}
+.hero-btns{display:flex;gap:1rem;flex-wrap:wrap}
+.btn{
+  display:inline-flex;align-items:center;gap:.5rem;
+  padding:.8rem 1.8rem;border-radius:8px;
+  font-family:var(--font-body);font-size:.9rem;font-weight:600;
+  text-decoration:none;cursor:none;border:none;
+  transition:transform .2s,box-shadow .2s;
+}
+.btn:hover{transform:translateY(-2px)}
+.btn-primary{
+  background:linear-gradient(135deg,var(--indigo-light),var(--pink));
+  color:#fff;
+  box-shadow:0 8px 24px rgba(240,24,110,.3);
+}
+.btn-primary:hover{box-shadow:0 12px 32px rgba(240,24,110,.5)}
+.btn-outline{
+  background:transparent;
+  border:1px solid var(--border);
+  color:var(--text);
+}
+.btn-outline:hover{border-color:var(--cyan);color:var(--cyan);box-shadow:0 0 20px rgba(0,229,255,.15)}
+
+/* ── HERO 3D CARD ── */
+.hero-right{display:flex;justify-content:center;align-items:center}
+.hero-card-wrap{
+  position:relative;
+  display:flex;align-items:center;justify-content:center;
+}
+.hero-orb{
+  position:absolute;
+  width:280px;height:280px;
+  border-radius:50%;
+  background:radial-gradient(circle,rgba(91,70,217,.35) 0%,transparent 70%);
+  filter:blur(40px);
+  animation:orb 6s ease-in-out infinite alternate;
+}
+@keyframes orb{0%{transform:scale(1) translateY(0)}100%{transform:scale(1.15) translateY(-20px)}}
+.hero-ring{
+  position:absolute;
+  width:240px;height:240px;
+  border-radius:50%;
+  border:2px dashed rgba(91,70,217,.4);
+  animation:spin 12s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.hero-card{
+  position:relative;
+  width:220px;height:280px;
+  background:linear-gradient(135deg,rgba(255,255,255,.07),rgba(255,255,255,.02));
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:20px;
+  backdrop-filter:blur(12px);
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  gap:1rem;
+  box-shadow:0 30px 80px rgba(0,0,0,.5);
+  animation:float3d 6s ease-in-out infinite;
+  transform-style:preserve-3d;
+}
+@keyframes float3d{
+  0%,100%{transform:translateY(0) rotateY(-8deg) rotateX(3deg)}
+  50%{transform:translateY(-18px) rotateY(8deg) rotateX(-3deg)}
+}
+.card-avatar{
+  width:70px;height:70px;
+  border-radius:50%;
+  background:linear-gradient(135deg,var(--indigo-light),var(--pink));
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-head);
+  font-size:1.6rem;font-weight:800;color:#fff;
+  box-shadow:0 8px 24px rgba(91,70,217,.5);
+}
+.card-name{
+  font-family:var(--font-head);
+  font-size:1rem;font-weight:700;
+  color:var(--text);text-align:center;
+}
+.card-role{
+  font-size:.75rem;color:var(--muted);
+  text-align:center;padding:0 1.2rem;
+  line-height:1.5;
+}
+.card-stats{
+  display:flex;gap:.75rem;flex-wrap:wrap;justify-content:center;
+  padding:0 1rem;
+}
+.stat-chip{
+  font-size:.7rem;font-weight:600;
+  padding:.3rem .7rem;border-radius:99px;
+  white-space:nowrap;
+}
+.stat-chip.pink{background:rgba(240,24,110,.15);color:var(--pink);border:1px solid rgba(240,24,110,.3)}
+.stat-chip.cyan{background:rgba(0,229,255,.1);color:var(--cyan);border:1px solid rgba(0,229,255,.25)}
+.stat-chip.amber{background:rgba(255,179,0,.1);color:var(--amber);border:1px solid rgba(255,179,0,.25)}
+
+/* ── MARQUEE ── */
+.marquee-section{
+  position:relative;z-index:1;
+  padding:2rem 0;
+  border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+  overflow:hidden;
+}
+.marquee-track{
+  display:flex;gap:3rem;
+  animation:marquee 20s linear infinite;
+  width:max-content;
+}
+.marquee-track:hover{animation-play-state:paused}
+@keyframes marquee{to{transform:translateX(-50%)}}
+.marquee-item{
+  display:flex;align-items:center;gap:.75rem;
+  white-space:nowrap;
+  font-size:.85rem;font-weight:600;
+  color:var(--muted);
+  letter-spacing:.05em;text-transform:uppercase;
+}
+.marquee-dot{width:6px;height:6px;border-radius:50%}
+
+/* ── SKILLS ── */
+.skills-grid{display:grid;grid-template-columns:1fr 1fr;gap:3rem}
+.skill-category{margin-bottom:2rem}
+.skill-cat-label{
+  font-size:.75rem;font-weight:600;
+  color:var(--amber);
+  letter-spacing:.15em;text-transform:uppercase;
+  margin-bottom:1.25rem;
+}
+.skill-item{margin-bottom:1.25rem}
+.skill-header{
+  display:flex;justify-content:space-between;
+  font-size:.875rem;font-weight:500;
+  margin-bottom:.5rem;
+}
+.skill-pct{color:var(--muted);font-size:.8rem}
+.skill-bar-bg{
+  height:6px;background:var(--surface2);
+  border-radius:99px;overflow:hidden;
+}
+.skill-bar-fill{
+  height:100%;width:0%;
+  border-radius:99px;
+  background:linear-gradient(90deg,var(--indigo-light),var(--pink));
+  position:relative;
+  transition:width 1s var(--ease-out-quint);
+}
+.skill-bar-fill.animated::after{
+  content:'';
+  position:absolute;top:0;left:-100%;
+  width:100%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.5),transparent);
+  animation:shimmerBar .8s .8s ease forwards;
+}
+@keyframes shimmerBar{to{left:200%}}
+
+.chip-cloud{
+  display:flex;flex-wrap:wrap;gap:.6rem;
+  grid-column:1/-1;
+  margin-top:1rem;
+}
+.tech-chip{
+  padding:.45rem 1rem;
+  border-radius:99px;
+  font-size:.78rem;font-weight:600;
+  border:1px solid var(--border);
+  color:var(--muted);
+  background:var(--surface);
+  transition:transform .2s,color .2s,border-color .2s,box-shadow .2s;
+  cursor:default;
+}
+.tech-chip:hover{
+  transform:translateY(-4px);
+  color:var(--cyan);
+  border-color:rgba(0,229,255,.4);
+  box-shadow:0 4px 16px rgba(0,229,255,.15);
+}
+
+/* ── EXPERIENCE TIMELINE ── */
+.timeline{position:relative;padding-left:2rem}
+.timeline::before{
+  content:'';
+  position:absolute;left:0;top:0;bottom:0;width:2px;
+  background:linear-gradient(180deg,var(--indigo-light),var(--pink),var(--cyan));
+  border-radius:99px;
+}
+.timeline-item{
+  position:relative;
+  margin-bottom:2.5rem;
+  opacity:0;transform:translateX(-30px);
+  transition:opacity .6s var(--ease-out-quint),transform .6s var(--ease-out-quint);
+}
+.timeline-item.visible{opacity:1;transform:translateX(0)}
+.timeline-dot{
+  position:absolute;left:-2.5rem;top:.5rem;
+  width:14px;height:14px;
+  border-radius:50%;
+  background:linear-gradient(135deg,var(--pink),var(--cyan));
+  box-shadow:0 0 12px rgba(240,24,110,.5);
+  border:2px solid var(--bg);
+}
+.exp-card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:1.75rem;
+  transition:transform .3s,box-shadow .3s,border-color .3s;
+}
+.exp-card:hover{
+  transform:translateX(8px);
+  box-shadow:0 8px 40px rgba(91,70,217,.2);
+  border-color:rgba(91,70,217,.3);
+}
+.exp-top{display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;flex-wrap:wrap}
+.exp-title{
+  font-family:var(--font-head);
+  font-size:1.15rem;font-weight:700;
+}
+.exp-badge{
+  display:inline-block;
+  padding:.3rem .8rem;border-radius:99px;
+  font-size:.72rem;font-weight:600;
+  background:rgba(0,229,255,.1);
+  color:var(--cyan);
+  border:1px solid rgba(0,229,255,.25);
+  white-space:nowrap;
+}
+.exp-company{
+  font-size:.9rem;color:var(--pink);
+  font-weight:600;margin-top:.25rem;
+}
+.exp-meta{
+  font-size:.8rem;color:var(--muted);
+  margin-top:.25rem;margin-bottom:1rem;
+  display:flex;gap:1rem;flex-wrap:wrap;
+}
+.exp-bullets{list-style:none;display:flex;flex-direction:column;gap:.5rem}
+.exp-bullets li{
+  font-size:.875rem;color:var(--muted);
+  padding-left:1.2rem;position:relative;
+  line-height:1.6;
+}
+.exp-bullets li::before{
+  content:'›';
+  position:absolute;left:0;
+  color:var(--cyan);font-weight:700;
+}
+
+/* ── PROJECTS ── */
+.projects-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:1.5rem;
+}
+.project-card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:1.75rem;
+  position:relative;overflow:hidden;
+  transition:transform .3s,box-shadow .3s;
+  opacity:0;transform:translateY(30px);
+}
+.project-card.visible{opacity:1;transform:translateY(0)}
+.project-card::before{
+  content:'';
+  position:absolute;top:0;left:-100%;
+  width:100%;height:3px;
+  background:linear-gradient(90deg,var(--indigo-light),var(--pink),var(--cyan));
+  transition:left .4s var(--ease-out-quint);
+}
+.project-card:hover::before{left:0}
+.project-card:hover{transform:translateY(-6px);box-shadow:0 20px 60px rgba(0,0,0,.4)}
+.project-emoji{font-size:2rem;margin-bottom:1rem}
+.project-name{
+  font-family:var(--font-head);
+  font-size:1rem;font-weight:700;
+  margin-bottom:.5rem;
+}
+.project-desc{
+  font-size:.83rem;color:var(--muted);
+  line-height:1.6;margin-bottom:1rem;
+}
+.project-tags{display:flex;flex-wrap:wrap;gap:.4rem}
+.project-tag{
+  font-size:.7rem;font-weight:600;
+  padding:.25rem .65rem;border-radius:99px;
+  background:var(--surface2);
+  color:var(--muted);
+  border:1px solid var(--border);
+}
+
+/* ── EDUCATION ── */
+.edu-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.5rem}
+.edu-card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:2rem;
+  transition:transform .3s,box-shadow .3s,border-color .3s;
+  opacity:0;transform:translateY(20px);
+}
+.edu-card.visible{opacity:1;transform:translateY(0)}
+.edu-card:hover{
+  transform:translateY(-4px);
+  border-color:rgba(255,179,0,.3);
+  box-shadow:0 8px 30px rgba(255,179,0,.1);
+}
+.edu-degree{
+  font-family:var(--font-head);
+  font-size:1.05rem;font-weight:700;
+  margin-bottom:.5rem;
+}
+.edu-school{font-size:.9rem;color:var(--amber);font-weight:600;margin-bottom:.35rem}
+.edu-year{font-size:.8rem;color:var(--muted)}
+.cert-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
+  gap:1rem;
+  margin-top:3rem;
+}
+.cert-card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:1.25rem 1.5rem;
+  display:flex;align-items:center;gap:1rem;
+  transition:transform .2s,border-color .2s;
+  opacity:0;transform:translateX(-20px);
+}
+.cert-card.visible{opacity:1;transform:translateX(0)}
+.cert-card:hover{transform:translateX(4px);border-color:rgba(91,70,217,.4)}
+.cert-icon{
+  width:40px;height:40px;min-width:40px;border-radius:10px;
+  background:linear-gradient(135deg,var(--indigo-light),var(--pink));
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.1rem;
+}
+.cert-name{font-size:.85rem;font-weight:500;line-height:1.4}
+
+/* ── CONTACT ── */
+.contact-inner{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:4rem;align-items:center;
+}
+.contact-cards{display:flex;flex-direction:column;gap:1rem}
+.contact-card{
+  display:flex;align-items:center;gap:1.25rem;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:1.25rem 1.5rem;
+  transition:transform .2s,border-color .2s,box-shadow .2s;
+  opacity:0;transform:translateX(-30px);
+}
+.contact-card.visible{opacity:1;transform:translateX(0)}
+.contact-card:hover{
+  transform:translateX(6px);
+  border-color:rgba(0,229,255,.3);
+  box-shadow:0 4px 20px rgba(0,229,255,.1);
+}
+.contact-icon{
+  width:44px;height:44px;min-width:44px;border-radius:12px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.2rem;
+}
+.contact-icon.pink{background:rgba(240,24,110,.12);border:1px solid rgba(240,24,110,.25)}
+.contact-icon.cyan{background:rgba(0,229,255,.08);border:1px solid rgba(0,229,255,.2)}
+.contact-icon.amber{background:rgba(255,179,0,.08);border:1px solid rgba(255,179,0,.2)}
+.contact-icon.indigo{background:rgba(91,70,217,.12);border:1px solid rgba(91,70,217,.3)}
+.contact-label{font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;font-weight:600}
+.contact-value{font-size:.9rem;font-weight:500;margin-top:.15rem}
+
+/* ── CONTACT AVATAR ── */
+.contact-avatar-wrap{
+  display:flex;align-items:center;justify-content:center;
+  position:relative;
+}
+.ripple-ring{
+  position:absolute;border-radius:50%;
+  border:2px solid var(--indigo-light);
+  animation:ripple 3s ease-out infinite;
+  opacity:0;
+}
+.ripple-ring:nth-child(1){width:140px;height:140px;animation-delay:0s}
+.ripple-ring:nth-child(2){width:190px;height:190px;animation-delay:1s}
+.ripple-ring:nth-child(3){width:240px;height:240px;animation-delay:2s}
+@keyframes ripple{
+  0%{opacity:.6;transform:scale(1)}
+  100%{opacity:0;transform:scale(1.1)}
+}
+.contact-avatar{
+  width:110px;height:110px;
+  border-radius:50%;
+  background:linear-gradient(135deg,var(--indigo-light),var(--pink));
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-head);
+  font-size:2.5rem;font-weight:800;
+  color:#fff;
+  position:relative;z-index:1;
+  box-shadow:0 0 40px rgba(91,70,217,.5);
+  animation:avatarPulse 3s ease-in-out infinite;
+}
+@keyframes avatarPulse{
+  0%,100%{box-shadow:0 0 40px rgba(91,70,217,.5)}
+  50%{box-shadow:0 0 70px rgba(240,24,110,.5)}
+}
+
+/* ── FOOTER ── */
+footer{
+  position:relative;z-index:1;
+  text-align:center;
+  padding:3rem 2rem;
+  border-top:1px solid var(--border);
+  color:var(--muted);
+  font-size:.85rem;
+}
+footer span{color:var(--pink)}
+
+/* ── SCROLL REVEAL ── */
+.reveal{
+  opacity:0;
+  transform:translateY(40px);
+  transition:opacity .7s var(--ease-out-quint),transform .7s var(--ease-out-quint);
+}
+.reveal.from-left{transform:translateX(-40px)}
+.reveal.from-right{transform:translateX(40px)}
+.reveal.visible{opacity:1;transform:none}
+
+/* ── GRAD SHIFT (loader) ── */
+@keyframes gradShift{
+  0%{background-position:0% 50%}
+  100%{background-position:300% 50%}
+}
+
+/* ── RESUME ── */
+.resume-layout{
+  display:grid;
+  grid-template-columns:1fr 1.4fr;
+  gap:2rem;
+  align-items:start;
+}
+.resume-col{
+  display:flex;flex-direction:column;gap:1.5rem;
+}
+.resume-col-left .resume-block{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:1.5rem;
+}
+.resume-col-right .resume-block{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:1.5rem;
+}
+.resume-block-title{
+  font-family:var(--font-head);
+  font-size:.95rem;font-weight:700;
+  color:var(--text);
+  margin-bottom:1rem;
+  display:flex;align-items:center;gap:.5rem;
+  padding-bottom:.75rem;
+  border-bottom:1px solid var(--border);
+}
+.rbt-icon{font-size:1rem}
+.resume-bio{font-size:.85rem;color:var(--muted);line-height:1.7}
+.resume-contacts{display:flex;flex-direction:column;gap:.6rem}
+.rc-row{
+  display:flex;align-items:center;gap:.6rem;
+  font-size:.82rem;color:var(--muted);
+}
+.rc-ic{font-size:.9rem;min-width:1.2rem}
+.resume-tags{display:flex;flex-wrap:wrap;gap:.4rem}
+.resume-tags span{
+  font-size:.72rem;font-weight:600;
+  padding:.25rem .65rem;border-radius:99px;
+  background:rgba(91,70,217,.12);
+  color:var(--indigo-light);
+  border:1px solid rgba(91,70,217,.25);
+}
+.resume-edu{display:flex;flex-direction:column;gap:.25rem}
+.re-degree{font-size:.9rem;font-weight:600;color:var(--text)}
+.re-school{font-size:.82rem;color:var(--amber)}
+.re-year{font-size:.78rem;color:var(--muted)}
+.resume-certs{list-style:none;display:flex;flex-direction:column;gap:.5rem}
+.resume-certs li{
+  font-size:.82rem;color:var(--muted);
+  padding-left:1.2rem;position:relative;
+}
+.resume-certs li::before{content:'▸';position:absolute;left:0;color:var(--cyan)}
+.resume-soft{display:grid;grid-template-columns:1fr 1fr;gap:.6rem}
+.rs-item{
+  font-size:.8rem;font-weight:500;
+  color:var(--muted);
+  background:var(--surface2);
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:.55rem .75rem;
+}
+/* right col */
+.resume-exp-item{display:flex;flex-direction:column;gap:.5rem}
+.rei-header{display:flex;justify-content:space-between;align-items:flex-start;gap:.5rem;flex-wrap:wrap}
+.rei-title{font-family:var(--font-head);font-size:1rem;font-weight:700}
+.rei-company{font-size:.85rem;color:var(--pink);font-weight:600;margin-top:.15rem}
+.rei-date{
+  font-size:.75rem;font-weight:600;
+  padding:.25rem .7rem;border-radius:99px;
+  background:rgba(0,229,255,.1);color:var(--cyan);
+  border:1px solid rgba(0,229,255,.2);
+  white-space:nowrap;
+}
+.rei-location{font-size:.78rem;color:var(--muted)}
+.rei-list{list-style:none;display:flex;flex-direction:column;gap:.4rem;margin-top:.5rem}
+.rei-list li{
+  font-size:.82rem;color:var(--muted);
+  padding-left:1.2rem;position:relative;line-height:1.5;
+}
+.rei-list li::before{content:'›';position:absolute;left:0;color:var(--cyan);font-weight:700}
+.resume-stack-grid{display:flex;flex-direction:column;gap:.9rem}
+.rsg-item{display:grid;grid-template-columns:130px 1fr 36px;align-items:center;gap:.75rem}
+.rsg-label{font-size:.8rem;color:var(--muted)}
+.rsg-bar{height:5px;background:var(--surface2);border-radius:99px;overflow:hidden}
+.rsg-fill{
+  height:100%;width:0%;
+  background:linear-gradient(90deg,var(--indigo-light),var(--cyan));
+  border-radius:99px;
+  transition:width 1.2s var(--ease-out-quint);
+}
+.rsg-pct{font-size:.72rem;color:var(--muted);text-align:right}
+/* download */
+.resume-download-wrap{
+  display:flex;flex-direction:column;align-items:center;
+  gap:.75rem;margin-top:3rem;
+}
+.resume-dl-btn{font-size:1rem;padding:1rem 2.5rem;gap:.65rem}
+.resume-dl-note{font-size:.78rem;color:var(--muted)}
+
+/* ── FORM ── */
+.form-layout{
+  display:grid;
+  grid-template-columns:1fr 1.6fr;
+  gap:3rem;align-items:start;
+}
+.form-intro{
+  font-size:.95rem;color:var(--muted);
+  line-height:1.7;margin-bottom:2rem;
+}
+.form-info-cards{display:flex;flex-direction:column;gap:.85rem}
+.fi-card{
+  display:flex;align-items:center;gap:1rem;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:12px;padding:1rem 1.25rem;
+  transition:transform .2s,border-color .2s;
+}
+.fi-card:hover{transform:translateX(4px);border-color:rgba(0,229,255,.25)}
+.fi-icon{
+  width:40px;height:40px;min-width:40px;
+  border-radius:10px;border:1px solid;
+  display:flex;align-items:center;justify-content:center;font-size:1.1rem;
+}
+.fi-label{font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;font-weight:600}
+.fi-val{font-size:.9rem;font-weight:500;margin-top:.1rem}
+.contact-form{display:flex;flex-direction:column;gap:1.25rem}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem}
+.form-group{display:flex;flex-direction:column;gap:.4rem;position:relative}
+.form-label{
+  font-size:.78rem;font-weight:600;
+  letter-spacing:.08em;text-transform:uppercase;
+  color:var(--muted);
+}
+.form-input{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:.85rem 1rem;
+  font-family:var(--font-body);
+  font-size:.9rem;
+  color:var(--text);
+  outline:none;
+  transition:border-color .2s,box-shadow .2s,background .2s;
+  -webkit-appearance:none;
+  appearance:none;
+}
+.form-input::placeholder{color:rgba(136,128,176,.5)}
+.form-input:focus{
+  border-color:var(--indigo-light);
+  background:rgba(91,70,217,.06);
+  box-shadow:0 0 0 3px rgba(91,70,217,.15);
+}
+.form-input.error{border-color:var(--pink);box-shadow:0 0 0 3px rgba(240,24,110,.12)}
+.form-input.success{border-color:#22c55e;box-shadow:0 0 0 3px rgba(34,197,94,.1)}
+.form-select{cursor:none}
+.form-textarea{resize:vertical;min-height:120px}
+.form-err{font-size:.75rem;color:var(--pink);min-height:1rem;display:block}
+.char-count{
+  font-size:.72rem;color:var(--muted);
+  text-align:right;margin-top:-.25rem;
+}
+.form-submit-btn{
+  width:100%;justify-content:center;
+  font-size:1rem;padding:1rem;
+  gap:.6rem;
+  position:relative;overflow:hidden;
+}
+.form-submit-btn::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.15),transparent);
+  transform:translateX(-100%);
+  transition:transform .4s;
+}
+.form-submit-btn:hover::after{transform:translateX(100%)}
+.form-submit-btn:disabled{opacity:.6;pointer-events:none}
+/* success */
+.form-success{
+  display:none;
+  flex-direction:column;align-items:center;
+  text-align:center;padding:3rem 2rem;
+  background:var(--surface);
+  border:1px solid rgba(34,197,94,.25);
+  border-radius:16px;
+  animation:fadeUp .5s var(--ease-out-quint) both;
+}
+.form-success.show{display:flex}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+.success-icon{font-size:3rem;margin-bottom:1rem;animation:popIn .4s .1s var(--ease-out-quint) both}
+@keyframes popIn{from{transform:scale(0)}to{transform:scale(1)}}
+.success-title{font-family:var(--font-head);font-size:1.5rem;font-weight:800;margin-bottom:.5rem;color:var(--text)}
+.success-msg{font-size:.9rem;color:var(--muted);line-height:1.6}
+
+/* ── RESPONSIVE ── */
+@media(max-width:900px){
+  .resume-layout{grid-template-columns:1fr}
+  .form-layout{grid-template-columns:1fr}
+  .form-row{grid-template-columns:1fr}
+  .rsg-item{grid-template-columns:100px 1fr 30px}
+  .hero-right{display:none}
+  .skills-grid{grid-template-columns:1fr}
+  .projects-grid{grid-template-columns:1fr 1fr}
+  .contact-inner{grid-template-columns:1fr}
+  .contact-avatar-wrap{display:none}
+  nav{padding:1rem 1.25rem}
+  .nav-links{display:none;position:absolute;top:100%;left:0;right:0;background:rgba(5,4,15,.97);flex-direction:column;padding:1.5rem;gap:1rem;border-bottom:1px solid var(--border)}
+  .nav-links.open{display:flex}
+  .nav-toggle{display:flex}
+  .hero-btns{justify-content:center}
+  .resume-layout{grid-template-columns:1fr}
+  .form-layout{grid-template-columns:1fr}
+  .form-row{grid-template-columns:1fr}
+  .rsg-item{grid-template-columns:100px 1fr 30px}
+}
+@media(max-width:600px){
+  .projects-grid{grid-template-columns:1fr}
+  .skills-grid{grid-template-columns:1fr}
+  section{padding:5rem 1.25rem}
+  .resume-soft{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body class="loading">
+
+<!-- CURSOR -->
+<div id="cursor-dot"></div>
+<div id="cursor-ring"></div>
+
+<!-- LOADER -->
+<div id="loader">
+  <div class="loader-initials">FJ</div>
+  <div class="loader-label">Loading Portfolio</div>
+  <div class="loader-bar-wrap"><div class="loader-bar"></div></div>
+</div>
+
+<!-- PARTICLES -->
+<canvas id="bg-canvas"></canvas>
+
+<!-- NAV -->
+<nav id="navbar">
+  <a href="#hero" class="nav-logo">Frexin J.</a>
+  <ul class="nav-links" id="nav-links">
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#experience">Experience</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#education">Education</a></li>
+    <li><a href="#resume">Resume</a></li>
+    <li><a href="#contact">Contact</a></li>
+    <li><a href="#hire-me">Hire Me</a></li>
+  </ul>
+  <button class="nav-toggle" id="nav-toggle" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-inner">
+    <div class="hero-left">
+      <div class="avail-tag"><span class="avail-dot"></span>Available for Opportunities</div>
+      <h1 class="hero-name">Frexin<br>Jepasingh</h1>
+      <p class="hero-role">IoT & Network Engineer · <span>IT Support Specialist</span></p>
+      <div class="hero-btns">
+        <a href="#contact" class="btn btn-primary">Get In Touch</a>
+        <a href="#skills" class="btn btn-outline">View Skills</a>
+      </div>
+    </div>
+    <div class="hero-right">
+      <div class="hero-card-wrap">
+        <div class="hero-orb"></div>
+        <div class="hero-ring"></div>
+        <div class="hero-card">
+          <div class="card-avatar">FJ</div>
+          <div class="card-name">Frexin Jepasingh</div>
+          <div class="card-role">IoT & Network Engineer<br>IT Support Professional</div>
+          <div class="card-stats">
+            <span class="stat-chip pink">🌐 IoT</span>
+            <span class="stat-chip cyan">🔧 L1 Support</span>
+            <span class="stat-chip amber">📡 Networking</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-section">
+  <div class="marquee-track" id="marquee-track"></div>
+</div>
+
+<!-- SKILLS -->
+<section id="skills">
+  <div class="section-label">Technical Expertise</div>
+  <h2 class="section-title reveal">Skills & Technologies</h2>
+  <div class="skills-grid">
+    <div>
+      <div class="skill-category">
+        <div class="skill-cat-label">IT Support</div>
+        <div id="skills-it"></div>
+      </div>
+      <div class="skill-category">
+        <div class="skill-cat-label">Networking</div>
+        <div id="skills-net"></div>
+      </div>
+    </div>
+    <div>
+      <div class="skill-category">
+        <div class="skill-cat-label">Systems & Tools</div>
+        <div id="skills-sys"></div>
+      </div>
+      <div class="skill-category">
+        <div class="skill-cat-label">IoT</div>
+        <div id="skills-iot"></div>
+      </div>
+    </div>
+    <div class="chip-cloud" id="chip-cloud"></div>
+  </div>
+</section>
+
+<!-- EXPERIENCE -->
+<section id="experience">
+  <div class="section-label">Work History</div>
+  <h2 class="section-title reveal from-left">Experience</h2>
+  <div class="timeline">
+    <div class="timeline-item">
+      <div class="timeline-dot"></div>
+      <div class="exp-card">
+        <div class="exp-top">
+          <div>
+            <div class="exp-title">Project Implementation Executive</div>
+            <div class="exp-company">MSR IT Solution Pvt. Ltd.</div>
+            <div class="exp-meta">
+              <span>📅 Mar 2026 – Present</span>
+              <span>📍 Chennai, India</span>
+            </div>
+          </div>
+          <span class="exp-badge">Current Role</span>
+        </div>
+        <ul class="exp-bullets">
+          <li>Provided L1 IT support to users for hardware, software, and network issues</li>
+          <li>Installed and configured Android TVs and IoT devices on-site</li>
+          <li>Troubleshot hardware, software, and network-related issues efficiently</li>
+          <li>Performed IP configuration and LAN/WAN connectivity setup</li>
+          <li>Handled incident resolution and service requests efficiently</li>
+          <li>Coordinated with teams and escalated complex issues when required</li>
+          <li>Ensured systems were configured and functioning as per requirements</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects">
+  <div class="section-label">Work</div>
+  <h2 class="section-title reveal">Projects & Implementations</h2>
+  <div class="projects-grid" id="projects-grid"></div>
+</section>
+
+<!-- EDUCATION -->
+<section id="education">
+  <div class="section-label">Academic & Certifications</div>
+  <h2 class="section-title reveal from-right">Education</h2>
+  <div class="edu-grid">
+    <div class="edu-card">
+      <div class="edu-degree">Bachelor of Engineering — Computer Science</div>
+      <div class="edu-school">Ponjesly College of Engineering</div>
+      <div class="edu-year">📅 2021 – 2025</div>
+    </div>
+  </div>
+  <div style="margin-top:3rem">
+    <div class="section-label" style="margin-bottom:1rem">Certifications</div>
+    <div class="cert-grid" id="cert-grid"></div>
+  </div>
+</section>
+
+<!-- RESUME -->
+<section id="resume">
+  <div class="section-label">Curriculum Vitae</div>
+  <h2 class="section-title reveal from-left">My Resume</h2>
+  <div class="resume-layout">
+    <div class="resume-col resume-col-left reveal from-left">
+      <div class="resume-block">
+        <div class="resume-block-title"><span class="rbt-icon">👤</span>Profile</div>
+        <p class="resume-bio">Dedicated IT Support professional with hands-on experience in IoT-based implementation, networking, and troubleshooting. Skilled in handling service desk operations and delivering SLA-based support in fast-paced IT environments.</p>
+      </div>
+      <div class="resume-block">
+        <div class="resume-block-title"><span class="rbt-icon">📬</span>Contact</div>
+        <div class="resume-contacts">
+          <div class="rc-row"><span class="rc-ic">✉️</span>frexinj@gmail.com</div>
+          <div class="rc-row"><span class="rc-ic">📞</span>+91 9443558643</div>
+          <div class="rc-row"><span class="rc-ic">💼</span>linkedin.com/in/frexinj</div>
+          <div class="rc-row"><span class="rc-ic">📍</span>Chennai, India</div>
+          <div class="rc-row"><span class="rc-ic">✈️</span>Open to Relocation · Valid Passport</div>
+        </div>
+      </div>
+      <div class="resume-block">
+        <div class="resume-block-title"><span class="rbt-icon">🛠️</span>Core Skills</div>
+        <div class="resume-tags">
+          <span>Service Desk</span><span>Incident Management</span><span>LAN/WAN</span>
+          <span>TCP/IP</span><span>DNS</span><span>Windows</span><span>Ubuntu</span>
+          <span>Kali Linux</span><span>Active Directory</span><span>IoT</span>
+          <span>Android TV</span><span>VirtualBox</span>
+        </div>
+      </div>
+      <div class="resume-block">
+        <div class="resume-block-title"><span class="rbt-icon">🎓</span>Education</div>
+        <div class="resume-edu">
+          <div class="re-degree">B.E. Computer Science</div>
+          <div class="re-school">Ponjesly College of Engineering</div>
+          <div class="re-year">2021 – 2025</div>
+        </div>
+      </div>
+      <div class="resume-block">
+        <div class="resume-block-title"><span class="rbt-icon">📜</span>Certifications</div>
+        <ul class="resume-certs">
+          <li>Linux Network Administrator — Alison</li>
+          <li>Computer Networking: LAN &amp; OSI Model — Alison</li>
+          <li>Kali Linux for Ethical Hacking &amp; Security Analysis</li>
+        </ul>
+      </div>
+      <div class="resume-block">
+        <div class="resume-block-title"><span class="rbt-icon">🌟</span>Soft Skills</div>
+        <div class="resume-soft">
+          <div class="rs-item">🧠 Problem Solving</div>
+          <div class="rs-item">🔍 Troubleshooting Mindset</div>
+          <div class="rs-item">💬 Communication Skills</div>
+          <div class="rs-item">🤝 Team Collaboration</div>
+        </div>
+      </div>
+    </div>
+    <div class="resume-col resume-col-right reveal from-right">
+      <div class="resume-block">
+        <div class="resume-block-title"><span class="rbt-icon">💼</span>Work Experience</div>
+        <div class="resume-exp-item">
+          <div class="rei-header">
+            <div>
+              <div class="rei-title">Project Implementation Executive</div>
+              <div class="rei-company">MSR IT Solution Pvt. Ltd.</div>
+            </div>
+            <div class="rei-date">Mar 2026 – Present</div>
+          </div>
+          <div class="rei-location">📍 Chennai, India</div>
+          <ul class="rei-list">
+            <li>Provided L1 IT support for hardware, software &amp; network issues</li>
+            <li>Installed and configured Android TVs and IoT devices on-site</li>
+            <li>Performed IP configuration and LAN/WAN connectivity setup</li>
+            <li>Handled incident resolution and service requests efficiently</li>
+            <li>Coordinated with teams and escalated complex issues when required</li>
+            <li>Ensured all systems configured and functioning as per requirements</li>
+          </ul>
+        </div>
+      </div>
+      <div class="resume-block">
+        <div class="resume-block-title"><span class="rbt-icon">🔧</span>Technical Proficiency</div>
+        <div class="resume-stack-grid">
+          <div class="rsg-item"><div class="rsg-label">IT Support</div><div class="rsg-bar"><div class="rsg-fill" data-w="90"></div></div><span class="rsg-pct">90%</span></div>
+          <div class="rsg-item"><div class="rsg-label">Networking</div><div class="rsg-bar"><div class="rsg-fill" data-w="83"></div></div><span class="rsg-pct">83%</span></div>
+          <div class="rsg-item"><div class="rsg-label">IoT Devices</div><div class="rsg-bar"><div class="rsg-fill" data-w="85"></div></div><span class="rsg-pct">85%</span></div>
+          <div class="rsg-item"><div class="rsg-label">Linux</div><div class="rsg-bar"><div class="rsg-fill" data-w="78"></div></div><span class="rsg-pct">78%</span></div>
+          <div class="rsg-item"><div class="rsg-label">Active Directory</div><div class="rsg-bar"><div class="rsg-fill" data-w="75"></div></div><span class="rsg-pct">75%</span></div>
+          <div class="rsg-item"><div class="rsg-label">Troubleshooting</div><div class="rsg-bar"><div class="rsg-fill" data-w="92"></div></div><span class="rsg-pct">92%</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="resume-download-wrap reveal">
+    <button class="btn btn-primary resume-dl-btn" onclick="downloadResume()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Download Resume PDF
+    </button>
+    <p class="resume-dl-note">Prints a clean PDF version of this resume</p>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="section-label">Let's Connect</div>
+  <h2 class="section-title reveal">Get In Touch</h2>
+  <div class="contact-inner">
+    <div class="contact-cards" id="contact-cards"></div>
+    <div class="contact-avatar-wrap">
+      <div class="ripple-ring"></div>
+      <div class="ripple-ring"></div>
+      <div class="ripple-ring"></div>
+      <div class="contact-avatar">FJ</div>
+    </div>
+  </div>
+</section>
+
+<!-- HIRE ME FORM -->
+<section id="hire-me">
+  <div class="section-label">Work Together</div>
+  <h2 class="section-title reveal">Send Me a Message</h2>
+  <div class="form-layout">
+    <div class="form-left reveal from-left">
+      <p class="form-intro">Have an opportunity, project, or just want to say hi? Fill out the form and I'll get back to you as soon as possible.</p>
+      <div class="form-info-cards">
+        <div class="fi-card"><span class="fi-icon" style="background:rgba(0,229,255,.1);border-color:rgba(0,229,255,.25)">⚡</span><div><div class="fi-label">Response Time</div><div class="fi-val">Within 24 hours</div></div></div>
+        <div class="fi-card"><span class="fi-icon" style="background:rgba(255,179,0,.08);border-color:rgba(255,179,0,.2)">🌍</span><div><div class="fi-label">Work Type</div><div class="fi-val">Remote &amp; On-site</div></div></div>
+        <div class="fi-card"><span class="fi-icon" style="background:rgba(240,24,110,.1);border-color:rgba(240,24,110,.25)">✈️</span><div><div class="fi-label">Availability</div><div class="fi-val">Open to Relocation</div></div></div>
+      </div>
+    </div>
+    <div class="form-right reveal from-right">
+      <div class="contact-form" id="contact-form">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="f-name">Full Name</label>
+            <input class="form-input" id="f-name" type="text" placeholder="John Doe" autocomplete="off"/>
+            <span class="form-err" id="err-name"></span>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="f-email">Email Address</label>
+            <input class="form-input" id="f-email" type="email" placeholder="john@company.com" autocomplete="off"/>
+            <span class="form-err" id="err-email"></span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="f-subject">Subject</label>
+          <input class="form-input" id="f-subject" type="text" placeholder="Job Opportunity / Project Inquiry / etc." autocomplete="off"/>
+          <span class="form-err" id="err-subject"></span>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="f-type">Opportunity Type</label>
+          <select class="form-input form-select" id="f-type">
+            <option value="">Select type...</option>
+            <option>Full-time Position</option>
+            <option>Part-time / Contract</option>
+            <option>Freelance Project</option>
+            <option>Internship</option>
+            <option>Collaboration</option>
+            <option>General Inquiry</option>
+          </select>
+          <span class="form-err" id="err-type"></span>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="f-msg">Message</label>
+          <textarea class="form-input form-textarea" id="f-msg" placeholder="Tell me about the role, project, or how I can help you..." rows="5"></textarea>
+          <span class="form-err" id="err-msg"></span>
+          <span class="char-count" id="char-count">0 / 500</span>
+        </div>
+        <button class="btn btn-primary form-submit-btn" id="form-submit-btn" onclick="submitForm()">
+          <span id="btn-text">Send Message</span>
+          <svg id="btn-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        </button>
+      </div>
+      <!-- SUCCESS STATE -->
+      <div class="form-success" id="form-success">
+        <div class="success-icon">✅</div>
+        <div class="success-title">Message Sent!</div>
+        <p class="success-msg">Thank you for reaching out. I'll get back to you within 24 hours.</p>
+        <button class="btn btn-outline" onclick="resetForm()" style="margin-top:1.5rem">Send Another</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>Designed & Built with ❤️ — <span>Frexin Jepasingh</span> © 2026</p>
+  <p style="margin-top:.5rem;font-size:.78rem">Open to Relocation · Valid Passport</p>
+</footer>
+
+<script>
+/* ═══════════════════════════════
+   DATA
+═══════════════════════════════ */
+const skillsData = {
+  it:[
+    {name:'Service Desk Operations',pct:88},
+    {name:'Incident Management',pct:85},
+    {name:'User Support (Remote & On-site)',pct:90},
+  ],
+  net:[
+    {name:'IP Addressing / TCP/IP / DNS',pct:85},
+    {name:'LAN/WAN Troubleshooting',pct:82},
+    {name:'Network Configuration',pct:80},
+  ],
+  sys:[
+    {name:'Windows OS',pct:90},
+    {name:'Ubuntu / Kali Linux',pct:78},
+    {name:'Active Directory',pct:75},
+    {name:'Oracle VM VirtualBox',pct:72},
+  ],
+  iot:[
+    {name:'IoT Device Integration',pct:85},
+    {name:'Android TV Configuration',pct:88},
+  ],
+};
+
+const chips=['TCP/IP','DNS','LAN/WAN','Active Directory','ipconfig','ping','tracert','nslookup','Windows','Ubuntu','Kali Linux','Oracle VirtualBox','IoT','Android TV','L1 Support','Incident Mgmt','Service Desk','IP Addressing','Networking','Hardware Support'];
+
+const marqueeItems=[
+  {label:'MSR IT Solution Pvt. Ltd.',color:'var(--pink)'},
+  {label:'Ponjesly College of Engineering',color:'var(--cyan)'},
+  {label:'Open to Relocation',color:'var(--amber)'},
+  {label:'Valid Passport',color:'var(--indigo-light)'},
+  {label:'Chennai · India',color:'var(--pink)'},
+  {label:'IT Support · IoT · Networking',color:'var(--cyan)'},
+];
+
+const projects=[
+  {emoji:'📡',name:'IoT Device Deployment',desc:'Installed and configured IoT devices and Android TVs at client sites, ensuring end-to-end network connectivity and smooth operation.',tags:['IoT','Android TV','LAN/WAN','IP Config']},
+  {emoji:'🌐',name:'LAN/WAN Network Setup',desc:'Configured LAN/WAN infrastructure for multiple clients, including IP addressing, DNS configuration, and connectivity validation.',tags:['TCP/IP','DNS','LAN','WAN','ipconfig']},
+  {emoji:'🖥️',name:'L1 IT Support Operations',desc:'Managed service desk for hardware, software, and network issues — delivering SLA-based support and efficient incident resolution.',tags:['Helpdesk','Incident Mgmt','Windows','Remote Support']},
+  {emoji:'🔐',name:'Linux & Ethical Hacking Lab',desc:'Set up a personal homelab using VirtualBox with Ubuntu and Kali Linux for practicing network security and ethical hacking techniques.',tags:['Kali Linux','Ubuntu','VirtualBox','Network Security']},
+  {emoji:'📋',name:'Active Directory Management',desc:'Managed user accounts, groups, and permissions in Active Directory environments as part of IT support responsibilities.',tags:['Active Directory','Windows Server','User Management']},
+  {emoji:'🔧',name:'Network Troubleshooting Toolkit',desc:'Built a personal troubleshooting workflow using CLI tools (ipconfig, ping, tracert, nslookup) to diagnose and resolve connectivity issues rapidly.',tags:['ping','tracert','nslookup','CLI','Networking']},
+];
+
+const certs=[
+  {icon:'🐧',name:'Linux Network Administrator — Alison'},
+  {icon:'🌐',name:'Computer Networking: LAN & OSI Model — Alison'},
+  {icon:'🔐',name:'Kali Linux for Ethical Hacking & Security Analysis'},
+];
+
+const contacts=[
+  {icon:'✉️',cls:'pink',label:'Email',value:'frexinj@gmail.com'},
+  {icon:'📞',cls:'cyan',label:'Phone',value:'+91 9443558643'},
+  {icon:'💼',cls:'indigo',label:'LinkedIn',value:'linkedin.com/in/frexinj'},
+  {icon:'📍',cls:'amber',label:'Location',value:'Chennai, India'},
+  {icon:'✈️',cls:'pink',label:'Availability',value:'Open to Relocation · Valid Passport'},
+];
+
+/* ═══════════════════════════════
+   INIT DOM
+═══════════════════════════════ */
+// Marquee
+const mt=document.getElementById('marquee-track');
+[...marqueeItems,...marqueeItems].forEach(m=>{
+  const d=document.createElement('div');
+  d.className='marquee-item';
+  d.innerHTML=`<span class="marquee-dot" style="background:${m.color}"></span>${m.label}`;
+  mt.appendChild(d);
+});
+
+// Skills bars
+function buildSkills(id,data){
+  const c=document.getElementById(id);
+  data.forEach(s=>{
+    const d=document.createElement('div');
+    d.className='skill-item';
+    d.innerHTML=`<div class="skill-header"><span>${s.name}</span><span class="skill-pct">${s.pct}%</span></div><div class="skill-bar-bg"><div class="skill-bar-fill" data-pct="${s.pct}"></div></div>`;
+    c.appendChild(d);
+  });
+}
+buildSkills('skills-it',skillsData.it);
+buildSkills('skills-net',skillsData.net);
+buildSkills('skills-sys',skillsData.sys);
+buildSkills('skills-iot',skillsData.iot);
+
+// Chip cloud
+const cc=document.getElementById('chip-cloud');
+chips.forEach(c=>{
+  const span=document.createElement('span');
+  span.className='tech-chip';span.textContent=c;
+  cc.appendChild(span);
+});
+
+// Projects
+const pg=document.getElementById('projects-grid');
+projects.forEach((p,i)=>{
+  const card=document.createElement('div');
+  card.className='project-card';
+  card.style.transitionDelay=`${i*0.08}s`;
+  card.innerHTML=`<div class="project-emoji">${p.emoji}</div><div class="project-name">${p.name}</div><div class="project-desc">${p.desc}</div><div class="project-tags">${p.tags.map(t=>`<span class="project-tag">${t}</span>`).join('')}</div>`;
+  pg.appendChild(card);
+});
+
+// Certs
+const cg=document.getElementById('cert-grid');
+certs.forEach((c,i)=>{
+  const el=document.createElement('div');
+  el.className='cert-card';
+  el.style.transitionDelay=`${i*0.1}s`;
+  el.innerHTML=`<div class="cert-icon">${c.icon}</div><div class="cert-name">${c.name}</div>`;
+  cg.appendChild(el);
+});
+
+// Contact cards
+const cc2=document.getElementById('contact-cards');
+contacts.forEach((c,i)=>{
+  const el=document.createElement('div');
+  el.className='contact-card';
+  el.style.transitionDelay=`${i*0.1}s`;
+  el.innerHTML=`<div class="contact-icon ${c.cls}">${c.icon}</div><div><div class="contact-label">${c.label}</div><div class="contact-value">${c.value}</div></div>`;
+  cc2.appendChild(el);
+});
+
+/* ═══════════════════════════════
+   LOADER
+═══════════════════════════════ */
+window.addEventListener('load',()=>{
+  setTimeout(()=>{
+    document.getElementById('loader').classList.add('hide');
+    document.body.classList.remove('loading');
+  },2000);
+});
+
+/* ═══════════════════════════════
+   CURSOR
+═══════════════════════════════ */
+const dot=document.getElementById('cursor-dot');
+const ring=document.getElementById('cursor-ring');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;dot.style.left=mx+'px';dot.style.top=my+'px';});
+(function animRing(){
+  rx+=(mx-rx)*.12;ry+=(my-ry)*.12;
+  ring.style.left=rx+'px';ring.style.top=ry+'px';
+  requestAnimationFrame(animRing);
+})();
+
+/* ═══════════════════════════════
+   PARTICLE CANVAS
+═══════════════════════════════ */
+const canvas=document.getElementById('bg-canvas');
+const ctx=canvas.getContext('2d');
+let W,H,particles=[];
+const COLORS=['#5b46d9','#f0186e','#00e5ff','#ffb300'];
+function resize(){W=canvas.width=window.innerWidth;H=canvas.height=window.innerHeight}
+resize();window.addEventListener('resize',()=>{resize();initParticles()});
+
+function initParticles(){
+  particles=[];
+  const count=Math.floor((W*H)/14000);
+  for(let i=0;i<count;i++) particles.push({
+    x:Math.random()*W,y:Math.random()*H,
+    vx:(Math.random()-.5)*.4,vy:(Math.random()-.5)*.4,
+    r:Math.random()*2+1,
+    color:COLORS[Math.floor(Math.random()*COLORS.length)]
+  });
+}
+initParticles();
+
+function drawParticles(){
+  ctx.clearRect(0,0,W,H);
+  particles.forEach(p=>{
+    p.x+=p.vx;p.y+=p.vy;
+    if(p.x<0)p.x=W;if(p.x>W)p.x=0;
+    if(p.y<0)p.y=H;if(p.y>H)p.y=0;
+    ctx.beginPath();
+    ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+    ctx.fillStyle=p.color;
+    ctx.globalAlpha=.7;ctx.fill();
+  });
+  ctx.globalAlpha=1;
+  for(let i=0;i<particles.length;i++){
+    for(let j=i+1;j<particles.length;j++){
+      const dx=particles[i].x-particles[j].x;
+      const dy=particles[i].y-particles[j].y;
+      const dist=Math.sqrt(dx*dx+dy*dy);
+      if(dist<120){
+        ctx.beginPath();
+        ctx.moveTo(particles[i].x,particles[i].y);
+        ctx.lineTo(particles[j].x,particles[j].y);
+        ctx.strokeStyle=particles[i].color;
+        ctx.globalAlpha=(1-dist/120)*.15;
+        ctx.lineWidth=.7;
+        ctx.stroke();
+        ctx.globalAlpha=1;
+      }
+    }
+  }
+  requestAnimationFrame(drawParticles);
+}
+drawParticles();
+
+/* ═══════════════════════════════
+   INTERSECTION OBSERVER
+═══════════════════════════════ */
+const io=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      e.target.classList.add('visible');
+      // Skill bars
+      e.target.querySelectorAll&&e.target.querySelectorAll('.skill-bar-fill').forEach(bar=>{
+        bar.style.width=bar.dataset.pct+'%';
+        setTimeout(()=>bar.classList.add('animated'),50);
+      });
+    }
+  });
+},{threshold:.15});
+
+// Observe all revealable elements
+document.querySelectorAll('.reveal,.timeline-item,.project-card,.edu-card,.cert-card,.contact-card').forEach(el=>io.observe(el));
+
+// Skills section special observer
+const skillsSection=document.getElementById('skills');
+const skillsIO=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      document.querySelectorAll('.skill-bar-fill').forEach(bar=>{
+        bar.style.width=bar.dataset.pct+'%';
+        setTimeout(()=>bar.classList.add('animated'),100);
+      });
+      skillsIO.disconnect();
+    }
+  });
+},{threshold:.2});
+skillsIO.observe(skillsSection);
+
+/* ═══════════════════════════════
+   RESUME BARS (IntersectionObserver)
+═══════════════════════════════ */
+const resumeIO=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      e.target.querySelectorAll('.rsg-fill').forEach(bar=>{
+        bar.style.width=bar.dataset.w+'%';
+      });
+      resumeIO.unobserve(e.target);
+    }
+  });
+},{threshold:.3});
+document.querySelectorAll('.resume-stack-grid').forEach(el=>resumeIO.observe(el));
+
+/* ═══════════════════════════════
+   OBSERVE NEW ELEMENTS
+═══════════════════════════════ */
+document.querySelectorAll('.fi-card').forEach(el=>io.observe(el));
+
+/* ═══════════════════════════════
+   RESUME DOWNLOAD
+═══════════════════════════════ */
+function downloadResume(){
+  const w=window.open('','_blank');
+  w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8">
+  <title>Frexin Jepasingh — Resume</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Segoe UI',Arial,sans-serif;color:#1a1a2e;background:#fff;padding:2.5rem 2rem;max-width:800px;margin:0 auto;font-size:14px}
+    h1{font-size:2rem;font-weight:800;color:#3d2fa0;letter-spacing:-.02em}
+    .sub{color:#666;font-size:.95rem;margin-top:.25rem}
+    .contact-line{display:flex;gap:1.5rem;flex-wrap:wrap;margin-top:.5rem;font-size:.85rem;color:#444}
+    hr{border:none;border-top:2px solid #3d2fa0;margin:1.25rem 0}
+    h2{font-size:.8rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:#3d2fa0;margin-bottom:.75rem;margin-top:1.5rem}
+    p{line-height:1.6;color:#333}
+    .job-title{font-weight:700;font-size:1rem;color:#1a1a2e}
+    .job-co{color:#f0186e;font-weight:600;font-size:.9rem}
+    .job-meta{color:#888;font-size:.8rem;margin:.2rem 0 .5rem}
+    ul{list-style:none;padding-left:1rem}
+    ul li{position:relative;padding-left:.8rem;margin-bottom:.3rem;color:#333;line-height:1.5}
+    ul li::before{content:'›';position:absolute;left:0;color:#5b46d9;font-weight:700}
+    .skills-wrap{display:flex;flex-wrap:wrap;gap:.4rem}
+    .skill-tag{background:#ede9ff;color:#3d2fa0;padding:.2rem .65rem;border-radius:99px;font-size:.78rem;font-weight:600}
+    .cert-item{margin-bottom:.3rem;color:#333}
+    .soft-grid{display:grid;grid-template-columns:1fr 1fr;gap:.3rem}
+    .soft-item{background:#f5f3ff;padding:.35rem .75rem;border-radius:6px;font-size:.82rem;color:#444}
+    @media print{body{padding:1.5rem}}
+  </style></head><body>
+  <h1>Frexin Jepasingh</h1>
+  <div class="sub">IoT &amp; Network Engineer | IT Support Professional</div>
+  <div class="contact-line">
+    <span>✉ frexinj@gmail.com</span>
+    <span>📞 +91 9443558643</span>
+    <span>💼 linkedin.com/in/frexinj</span>
+    <span>📍 Chennai, India</span>
+    <span>✈ Open to Relocation · Valid Passport</span>
+  </div>
+  <hr/>
+  <h2>Summary</h2>
+  <p>Dedicated IT Support professional with hands-on experience in IoT-based implementation, networking, and troubleshooting. Skilled in handling service desk operations, resolving hardware/software/network issues, and providing timely technical support. Familiar with incident management and delivering SLA-based support in fast-paced IT environments.</p>
+  <h2>Work Experience</h2>
+  <div class="job-title">Project Implementation Executive</div>
+  <div class="job-co">MSR IT Solution Pvt. Ltd.</div>
+  <div class="job-meta">Mar 2026 – Present &nbsp;|&nbsp; Chennai, India</div>
+  <ul>
+    <li>Provided L1 IT support to users for hardware, software, and network issues</li>
+    <li>Installed and configured Android TVs and IoT devices on-site</li>
+    <li>Troubleshot hardware, software, and network-related issues</li>
+    <li>Performed IP configuration and LAN/WAN connectivity setup</li>
+    <li>Handled incident resolution and service requests efficiently</li>
+    <li>Coordinated with teams and escalated complex issues when required</li>
+    <li>Ensured systems were configured and functioning as per requirements</li>
+  </ul>
+  <h2>Technical Skills</h2>
+  <div class="skills-wrap">
+    <span class="skill-tag">Service Desk Operations</span>
+    <span class="skill-tag">Incident Management</span>
+    <span class="skill-tag">User Support</span>
+    <span class="skill-tag">IP Addressing</span>
+    <span class="skill-tag">TCP/IP</span>
+    <span class="skill-tag">DNS</span>
+    <span class="skill-tag">LAN/WAN</span>
+    <span class="skill-tag">Windows</span>
+    <span class="skill-tag">Ubuntu</span>
+    <span class="skill-tag">Kali Linux</span>
+    <span class="skill-tag">Active Directory</span>
+    <span class="skill-tag">Oracle VirtualBox</span>
+    <span class="skill-tag">IoT Integration</span>
+    <span class="skill-tag">Android TV Config</span>
+    <span class="skill-tag">ipconfig · ping · tracert · nslookup</span>
+  </div>
+  <h2>Certifications</h2>
+  <div class="cert-item">▸ Linux Network Administrator — Alison</div>
+  <div class="cert-item">▸ Computer Networking: LAN &amp; OSI Model — Alison</div>
+  <div class="cert-item">▸ Kali Linux for Ethical Hacking and Security Analysis</div>
+  <h2>Education</h2>
+  <div class="job-title">Bachelor of Engineering — Computer Science</div>
+  <div class="job-co" style="color:#ffb300">Ponjesly College of Engineering</div>
+  <div class="job-meta">2021 – 2025</div>
+  <h2>Soft Skills</h2>
+  <div class="soft-grid">
+    <div class="soft-item">🧠 Problem Solving</div>
+    <div class="soft-item">🔍 Troubleshooting Mindset</div>
+    <div class="soft-item">💬 Communication Skills</div>
+    <div class="soft-item">🤝 Team Collaboration</div>
+  </div>
+  <script>window.onload=function(){window.print()}<\/script>
+  </body></html>`);
+  w.document.close();
+}
+
+/* ═══════════════════════════════
+   FORM
+═══════════════════════════════ */
+const fMsg=document.getElementById('f-msg');
+if(fMsg){
+  fMsg.addEventListener('input',()=>{
+    const n=fMsg.value.length;
+    document.getElementById('char-count').textContent=n+' / 500';
+    if(n>500)fMsg.value=fMsg.value.slice(0,500);
+  });
+}
+
+function setErr(id,msg){
+  const el=document.getElementById(id);
+  if(el)el.textContent=msg;
+}
+function clearErrs(){
+  ['err-name','err-email','err-subject','err-type','err-msg'].forEach(id=>setErr(id,''));
+  document.querySelectorAll('.form-input').forEach(i=>i.classList.remove('error','success'));
+}
+function markOk(el){el.classList.remove('error');el.classList.add('success')}
+function markBad(el,errId,msg){el.classList.remove('success');el.classList.add('error');setErr(errId,msg)}
+
+function submitForm(){
+  clearErrs();
+  const name=document.getElementById('f-name');
+  const email=document.getElementById('f-email');
+  const subject=document.getElementById('f-subject');
+  const type=document.getElementById('f-type');
+  const msg=document.getElementById('f-msg');
+  let valid=true;
+  if(!name.value.trim()){markBad(name,'err-name','Please enter your name');valid=false}else markOk(name);
+  const emailRe=/^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if(!emailRe.test(email.value.trim())){markBad(email,'err-email','Please enter a valid email');valid=false}else markOk(email);
+  if(!subject.value.trim()){markBad(subject,'err-subject','Please add a subject');valid=false}else markOk(subject);
+  if(!type.value){markBad(type,'err-type','Please select an opportunity type');valid=false}else markOk(type);
+  if(msg.value.trim().length<10){markBad(msg,'err-msg','Message must be at least 10 characters');valid=false}else markOk(msg);
+  if(!valid)return;
+  const btn=document.getElementById('form-submit-btn');
+  btn.disabled=true;
+  document.getElementById('btn-text').textContent='Sending...';
+  setTimeout(()=>{
+    document.getElementById('contact-form').style.display='none';
+    const suc=document.getElementById('form-success');
+    suc.classList.add('show');
+  },1200);
+}
+
+function resetForm(){
+  clearErrs();
+  ['f-name','f-email','f-subject','f-msg'].forEach(id=>{const el=document.getElementById(id);if(el)el.value=''});
+  document.getElementById('f-type').value='';
+  document.getElementById('char-count').textContent='0 / 500';
+  document.getElementById('form-submit-btn').disabled=false;
+  document.getElementById('btn-text').textContent='Send Message';
+  document.getElementById('contact-form').style.display='flex';
+  document.getElementById('form-success').classList.remove('show');
+}
+document.getElementById('nav-toggle').addEventListener('click',()=>{
+  document.getElementById('nav-links').classList.toggle('open');
+});
+document.querySelectorAll('.nav-links a').forEach(a=>{
+  a.addEventListener('click',()=>document.getElementById('nav-links').classList.remove('open'));
+});
+</script>
+</body>
+</html>
