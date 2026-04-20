@@ -1178,27 +1178,28 @@ footer span{color:var(--pink)}
       </div>
     </div>
     <div class="form-right reveal from-right">
-      <div class="contact-form" id="contact-form">
+      <div class="contact-form" id="contact-form" data-netlify="true" name="hire-me">
+        <input type="hidden" name="form-name" value="hire-me"/>
         <div class="form-row">
           <div class="form-group">
             <label class="form-label" for="f-name">Full Name</label>
-            <input class="form-input" id="f-name" type="text" placeholder="John Doe" autocomplete="off"/>
+            <input class="form-input" id="f-name" name="name" type="text" placeholder="John Doe" autocomplete="off"/>
             <span class="form-err" id="err-name"></span>
           </div>
           <div class="form-group">
             <label class="form-label" for="f-email">Email Address</label>
-            <input class="form-input" id="f-email" type="email" placeholder="john@company.com" autocomplete="off"/>
+            <input class="form-input" id="f-email" name="email" type="email" placeholder="john@company.com" autocomplete="off"/>
             <span class="form-err" id="err-email"></span>
           </div>
         </div>
         <div class="form-group">
           <label class="form-label" for="f-subject">Subject</label>
-          <input class="form-input" id="f-subject" type="text" placeholder="Job Opportunity / Project Inquiry / etc." autocomplete="off"/>
+          <input class="form-input" id="f-subject" name="subject" type="text" placeholder="Job Opportunity / Project Inquiry / etc." autocomplete="off"/>
           <span class="form-err" id="err-subject"></span>
         </div>
         <div class="form-group">
           <label class="form-label" for="f-type">Opportunity Type</label>
-          <select class="form-input form-select" id="f-type">
+          <select class="form-input form-select" id="f-type" name="type">
             <option value="">Select type...</option>
             <option>Full-time Position</option>
             <option>Part-time / Contract</option>
@@ -1211,7 +1212,7 @@ footer span{color:var(--pink)}
         </div>
         <div class="form-group">
           <label class="form-label" for="f-msg">Message</label>
-          <textarea class="form-input form-textarea" id="f-msg" placeholder="Tell me about the role, project, or how I can help you..." rows="5"></textarea>
+          <textarea class="form-input form-textarea" id="f-msg" name="message" placeholder="Tell me about the role, project, or how I can help you..." rows="5"></textarea>
           <span class="form-err" id="err-msg"></span>
           <span class="char-count" id="char-count">0 / 500</span>
         </div>
@@ -1627,11 +1628,29 @@ function submitForm(){
   const btn=document.getElementById('form-submit-btn');
   btn.disabled=true;
   document.getElementById('btn-text').textContent='Sending...';
-  setTimeout(()=>{
+  const formData=new URLSearchParams({
+    'form-name':'hire-me',
+    'name':name.value.trim(),
+    'email':email.value.trim(),
+    'subject':subject.value.trim(),
+    'type':type.value,
+    'message':msg.value.trim()
+  });
+  fetch('/',{
+    method:'POST',
+    headers:{'Content-Type':'application/x-www-form-urlencoded'},
+    body:formData.toString()
+  })
+  .then(()=>{
     document.getElementById('contact-form').style.display='none';
     const suc=document.getElementById('form-success');
     suc.classList.add('show');
-  },1200);
+  })
+  .catch(()=>{
+    btn.disabled=false;
+    document.getElementById('btn-text').textContent='Send Message';
+    alert('Something went wrong. Please email me directly at frexinj@gmail.com');
+  });
 }
 
 function resetForm(){
